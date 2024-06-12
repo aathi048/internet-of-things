@@ -1,0 +1,58 @@
+#include <DHT.h>
+
+#define DHTPIN 2     // Pin where the DHT11 is connected
+#define DHTTYPE DHT11
+#define MOISTURE_SENSOR A0
+#define LIGHT_SENSOR A1
+#define PUMP_PIN 3
+#define LIGHT_PIN 4
+
+DHT dht(DHTPIN, DHTTYPE);
+
+void setup() {
+  Serial.begin(9600);
+  dht.begin();
+  pinMode(MOISTURE_SENSOR, INPUT);
+  pinMode(LIGHT_SENSOR, INPUT);
+  pinMode(PUMP_PIN, OUTPUT);
+  pinMode(LIGHT_PIN, OUTPUT);
+}
+
+void loop() {
+  // Reading temperature and humidity
+  float humidity = dht.readHumidity();
+  float temperature = dht.readTemperature();
+
+  // Reading soil moisture
+  int soilMoisture = analogRead(MOISTURE_SENSOR);
+
+  // Reading light intensity
+  int lightIntensity = analogRead(LIGHT_SENSOR);
+
+  // Sending data to the serial port
+  Serial.print("Temperature: ");
+  Serial.print(temperature);
+  Serial.print(" C, Humidity: ");
+  Serial.print(humidity);
+  Serial.print(" %, Soil Moisture: ");
+  Serial.print(soilMoisture);
+  Serial.print(", Light Intensity: ");
+  Serial.println(lightIntensity);
+
+  // Control water pump based on soil moisture
+  if (soilMoisture < 300) {
+    digitalWrite(PUMP_PIN, HIGH); // Turn on water pump
+  } else {
+    digitalWrite(PUMP_PIN, LOW); // Turn off water pump
+  }
+
+  // Control LED grow lights based on light intensity
+  if (lightIntensity < 300) {
+    digitalWrite(LIGHT_PIN, HIGH); // Turn on lights
+  } else {
+    digitalWrite(LIGHT_PIN, LOW); // Turn off lights
+  }
+
+  delay(2000); // Delay between readings
+}
+  
